@@ -17,3 +17,8 @@ node index.js
 
 ## Usage
 Access dashboard at http://localhost:3000
+
+## Screenshots
+![home](public/images/home.jpg)
+![clients](public/images/clients.jpg)
+![connections](public/images/connections.jpg)
