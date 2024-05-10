@@ -1,0 +1,41 @@
+extends default
+
+block content
+  .connection-list
+    each connection in connections
+      .detail 
+        .row 
+          .title 
+            | CN
+          .value
+            = connection['Common Name']
+        .row 
+          .title 
+            | Real IP
+          .value
+            = connection['Real Address']
+        .row 
+          .title 
+            | Virtual IP
+          .value
+            = connection['Virtual Address']
+        .row 
+          .title 
+            | Up bytes
+          .value
+            = `${connection['Bytes Received']}`
+        .row 
+          .title 
+            | Down bytes
+          .value
+            = `${connection['Bytes Sent']}`
+        .row 
+          .title 
+            | Connected at
+          .value
+            = connection['Connected Since']
+
+  script.
+      setTimeout(function() {
+        window.location.reload(1);
+      }, 10000);

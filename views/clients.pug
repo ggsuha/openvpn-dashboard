@@ -1,0 +1,65 @@
+extends default
+
+block content
+  .new
+    button#create New Config
+  .client-list
+    each client in clients
+      .client
+        .row
+          .cn
+            =client
+          .action
+            a(href=`/${client}.ovpn`)
+              button.download() Download
+            button.delete-btn(data-client=client) Delete
+
+  .output
+    div#output
+
+  script.
+    let eventSource;
+    const createButton = document.getElementById('create');
+    const outputDiv = document.getElementById('output');
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+
+    const handleButtonClick = (event, endpoint, commonName = null) => {
+      let password;
+
+      if (commonName === null) {
+        return;
+      }
+
+      if (endpoint === '/delete') {
+        password = prompt('Please enter password');
+        if (!password) {
+          eventSource && eventSource.close();
+          return;
+        }
+      }
+
+      eventSource && eventSource.close();
+      outputDiv.innerHTML = 'Executing command...<br>';
+
+      eventSource = new EventSource(`${endpoint}?commonName=${commonName || ''}${password ? `&password=${password}` : ''}`);
+      eventSource.onmessage = (event) => {
+        outputDiv.innerHTML += `${event.data}<br>`;
+
+        if (event.data.includes('Command finished')) {
+          eventSource.close();
+        }
+      };
+      eventSource.onerror = (error) => {
+        outputDiv.innerHTML += `Error: ${error}<br>`;
+        eventSource.close();
+      };
+    };
+
+    createButton.addEventListener('click', () => handleButtonClick(event, '/create', prompt('Please enter common name')));
+
+    deleteButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const commonName = button.dataset.client;
+        handleButtonClick(event, '/delete', commonName);
+      });
+    });
